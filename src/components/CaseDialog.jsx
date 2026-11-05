@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from '../lib/gsap'
+import { lockScroll } from '../lib/smoothScroll'
 import { CaseVisual, playCaseVisual } from './caseVisuals'
 
 /** Native <dialog>, so Escape, focus trapping and the backdrop come for free. */
@@ -18,7 +19,8 @@ export default function CaseDialog({ item, animate, onClose }) {
     }
 
     dialog.showModal()
-    if (!animate) return undefined
+    lockScroll(true)
+    if (!animate) return () => lockScroll(false)
 
     const tl = gsap.timeline()
       .fromTo(bodyRef.current,
@@ -29,11 +31,14 @@ export default function CaseDialog({ item, animate, onClose }) {
         { clipPath: 'inset(0 0 0% 0)', duration: .55, ease: 'power3.inOut' }, 0)
       .from('.cd-cols > div', { y: 20, opacity: 0, stagger: .08, duration: .4 }, .3)
 
-    const visual = gsap.delayedCall(.4, () => playCaseVisual(visRef.current, item.visual))
+    const visual = item.shot
+      ? null
+      : gsap.delayedCall(.4, () => playCaseVisual(visRef.current, item.visual))
 
     return () => {
+      lockScroll(false)
       tl.kill()
-      visual.kill()
+      visual?.kill()
     }
   }, [item, animate])
 
@@ -47,21 +52,23 @@ export default function CaseDialog({ item, animate, onClose }) {
     >
       {item && (
         <>
+          <button
+            className="x"
+            type="button"
+            aria-label="Close project"
+            onClick={() => dialogRef.current.close()}
+          >
+            ×
+          </button>
+
           <div className="cd-vis" ref={visRef}>
-            <CaseVisual name={item.visual} />
+            {item.shot
+              ? <img src={item.shot} alt="" decoding="async" />
+              : <CaseVisual name={item.visual} />}
           </div>
-          <div className="cd-body" ref={bodyRef}>
-            <div className="cd-top">
-              <span className="cd-kind">{item.kind}</span>
-              <button
-                className="x"
-                type="button"
-                aria-label="Close project"
-                onClick={() => dialogRef.current.close()}
-              >
-                ×
-              </button>
-            </div>
+          {/* data-lenis-prevent: let this element keep its own wheel events */}
+          <div className="cd-body" ref={bodyRef} data-lenis-prevent>
+            <span className="cd-kind">{item.kind}</span>
 
             <h3 id="cd-h">{item.title}</h3>
 
@@ -72,6 +79,24 @@ export default function CaseDialog({ item, animate, onClose }) {
             </div>
 
             <p className="cd-tools">Tools: {item.tools}</p>
+
+            {item.link && (
+              <a className="cd-live" href={item.link} target="_blank" rel="noreferrer">
+                Visit the live site
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M7 17 17 7M9 7h8v8" />
+                </svg>
+                <span className="sr"> (opens in a new tab)</span>
+              </a>
+            )}
           </div>
         </>
       )}

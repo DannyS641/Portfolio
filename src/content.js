@@ -4,6 +4,14 @@
  * nothing else needs touching.
  */
 
+// Screenshots of the live sites, used as the card and dialog visuals. Vite
+// fingerprints these and rewrites the URLs, so they survive a sub-path deploy.
+// To replace one: screenshot at 1440x900, then resize to 1200px wide.
+import shotA5 from './assets/work/a5-athletes.jpg'
+import shotPortal from './assets/work/team-portal.jpg'
+import shotCamp from './assets/work/summer-camp.jpg'
+import shotCombine from './assets/work/combine.jpg'
+
 export const person = {
   name: 'Oluwanifemi Oso',
   // The two lines the hero particles spell out. Keep them short.
@@ -98,17 +106,24 @@ export const diagramIncident = {
 /* ---------- Uptime strip ---------- */
 
 export const statusStrip = {
-  heading: 'Systems I look after today',
-  note: 'Uptime over the last 60 days. Each bar is one day.',
+  // No employer name, no system names, no real figures, and no 'today'.
+  //
+  // The scale and the domain are what a hiring manager is reading for, and both
+  // survive you changing jobs. Naming the individual platforms would instead
+  // advertise you as the person holding the keys to named financial
+  // infrastructure, and would go stale the day you leave.
+  heading: 'Systems I look after',
+  note: 'Trading, post-trade and corporate platforms for a financial market infrastructure group — around 35 services on one dashboard. The bars are an illustration, not a live feed.',
   allOk: 'All systems working',
 }
 
 // `slowDays` are zero-based day indexes (0 = 60 days ago, 59 = today).
 export const services = [
-  { name: 'Company website', slowDays: [17, 42] },
-  { name: 'Staff portal', slowDays: [30] },
-  { name: 'HR system', slowDays: [] },
-  { name: 'Learning platform', slowDays: [8, 51] },
+  { name: 'Trading platforms', slowDays: [17, 42] },
+  { name: 'Post-trade portals', slowDays: [30] },
+  { name: 'Reporting portals', slowDays: [] },
+  { name: 'Corporate and brand sites', slowDays: [8, 51] },
+  { name: 'Databases', slowDays: [23] },
 ]
 
 /* ---------- "Two jobs, one person" ---------- */
@@ -178,64 +193,167 @@ export const buildRun = {
 
 /* ---------- Selected work ---------- */
 
+/**
+ * The Selected work deck: the section pins and each card is thrown off as you
+ * scroll, with the next one rising behind it.
+ *
+ * `screensPerCard` is how much scrolling each card gets, in viewport heights.
+ * Total pinned height is (cards - 1) x this. The mockup used 0.9, which was
+ * written when there were four cards — at nine that would pin the page for
+ * nearly seven screens before Skills comes into reach.
+ *
+ * Set `enabled: false` for the plain grid, which is also what reduced motion
+ * and a failed script fall back to.
+ */
+export const workDeck = {
+  enabled: true,
+  screensPerCard: 0.6,
+  hint: 'Keep scrolling to flip through',
+}
+
 export const workIntro = {
   heading: 'Selected work',
-  lede: 'Four projects, each from a different part of the job. Open one to see the problem, what I did and how it turned out.',
+  lede: 'Sites and portals I’ve built, and the systems I keep running. Open one to see the problem, what I did and where it stands.',
 }
 
 /**
- * `visual` picks the animated SVG drawn on the card. One of:
- * 'migration' | 'monitoring' | 'automation' | 'security'.
- * Reuse one for a new project, or add your own in src/components/caseVisuals.jsx.
+ * `shot` is a screenshot of the live site and wins over `visual` when present.
+ * Prefer it wherever there is a real site to show.
+ *
+ * `visual` picks the animated SVG drawn instead. One of:
+ * 'profiles' | 'portal' | 'signup' | 'event' | 'ledger' for the things built,
+ * 'migration' | 'monitoring' | 'security' | 'records' for the things run.
+ * Add your own in src/components/caseVisuals.jsx. Every case keeps a `visual`
+ * so there is still something to draw if a screenshot is removed.
+ *
+ * `link` is optional. When present the dialog shows a link out to the live site.
  */
 export const cases = [
   {
+    id: 'a5',
+    visual: 'profiles',
+    shot: shotA5,
+    kind: 'Marketing site',
+    title: 'A5 Athletes',
+    summary: 'The main site for a prep, NIL and global pathway programme taking young basketball players from Africa to the United States.',
+    results: ['Athlete roster and profiles', 'Live on a5athletes.com'],
+    problem: 'A5 runs prep programmes, an NIL platform, a documentary series and government partnerships across several countries, with nowhere that explained any of it or let an athlete, sponsor or partner get in touch.',
+    did: 'I built the site end to end: the programme and leadership pages, an athlete roster with a profile page per player, a gallery, embedded YouTube and Instagram feeds, a live panel, a newsletter sign-up and a contact form that sorts enquiries by type. Images are served through Cloudinary so the roster still loads quickly on a phone in Lagos.',
+    result: 'It is the front door for the programme. Athletes sign in to the team portal from it, and partner, media and representation enquiries all arrive through the one form.',
+    tools: 'React, Vercel, Cloudinary, YouTube and Instagram embeds',
+    link: 'https://a5athletes.com',
+  },
+  {
+    id: 'portal',
+    visual: 'portal',
+    shot: shotPortal,
+    kind: 'Web app',
+    title: 'A5 team portal',
+    summary: 'Sign-in portal where players keep their own profile up to date and mark themselves present by joining the session.',
+    results: ['Attendance on one click', 'Players onboard themselves'],
+    problem: 'Coaches tracked who turned up to online sessions by hand, and player details — position, jersey number, team, contact — lived scattered across messages and spreadsheets.',
+    did: 'I built a portal with sign-up and log-in, a profile each player owns and edits, and attendance that records itself: opening the session link from inside the portal marks that player present, so nobody keeps a register.',
+    result: 'Players onboard themselves, and attendance is captured as a side effect of joining rather than as a separate job for a coach.',
+    tools: 'React, Vercel, authentication, session links',
+    link: 'https://player-profile-omega.vercel.app/',
+  },
+  {
+    id: 'camp',
+    visual: 'signup',
+    shot: shotCamp,
+    kind: 'Event site',
+    title: 'A5 basketball summer camp',
+    summary: 'Registration site for a ten-day camp in Los Angeles that opens with a stop at NBA Summer League in Las Vegas.',
+    results: ['Registration built into the page', 'Day-by-day itinerary'],
+    problem: 'The camp had to sell a ten-day trip abroad to families in Africa and then take their registrations, without paying for a booking platform to do it.',
+    did: 'I built the site in Next.js: a countdown to the next session, the camp highlights, a day-by-day itinerary that expands, coach profiles, testimonials, and a registration form that captures the player, their age and grade, their guardian and an emergency contact in a single pass.',
+    result: 'A family can read the full itinerary and register in the same visit, with no third-party booking tool in between.',
+    tools: 'Next.js, Vercel, image optimisation',
+    link: 'https://adrenale5-basketball-summer-camp.vercel.app/',
+  },
+  {
+    id: 'combine',
+    visual: 'event',
+    shot: shotCombine,
+    kind: 'Event site',
+    title: 'Adrenale 5 national combine',
+    summary: 'One-page site for a basketball combine in Lagos, where scouts pick players for a US scholarship and the national prep team.',
+    results: ['FAQ that answers the phone calls', 'Light and dark themes'],
+    problem: 'Parents had to commit a 13-to-19-year-old to a day of athletic testing and scouting, and the questions that decided it — who can enter, what happens on the day, what to bring, whether scouts really attend — were all being asked by phone.',
+    did: 'I built a single page that leads with the date, venue and division, answers each of those questions in an expanding FAQ, and hands off to the registration form the organisers already used rather than replacing it.',
+    result: 'The repeat questions are answered on the page, and the tournament director’s number is there for the ones that aren’t.',
+    tools: 'HTML, CSS, JavaScript, Vercel',
+    link: 'https://adrenale5.vercel.app/',
+  },
+  {
+    id: 'tchala',
+    visual: 'ledger',
+    kind: 'In progress',
+    title: 'Klario Admin Dashboard',
+    summary: 'The admin side of a fintech product at Klario, built jointly with the team there.',
+    results: ['Built with a team', 'Still in progress'],
+    problem: 'Tchala needs an admin side — the screens the team uses to run the product, as opposed to the ones customers see.',
+    did: 'I work on this one jointly with the team at Klario, on the console behind the customer-facing product.',
+    result: 'Still in progress.',
+    tools: 'To confirm',
+  },
+
+  /*
+   * The four below are the running side of the job, written from the bullets in
+   * your own Experience section. They name no employer and no system, for the
+   * same reason the uptime strip doesn't.
+   *
+   * They are deliberately free of figures. Each one would land harder with a
+   * single concrete detail only you can supply — how many sites moved, how long
+   * an outage ran, how many records went in. Add those and delete this note.
+   */
+  {
     id: 'mig',
     visual: 'migration',
-    kind: 'Running',
-    title: 'Moving 14 sites to a new platform',
-    summary: 'Migrated production websites and portals off an ageing server, one at a time, with no lost data.',
-    results: ['No data lost', 'Every cut-over out of hours'],
-    problem: 'The company’s websites and portals ran on a server nearing end of life. Updates were risky and the hosting panel was out of support.',
-    did: 'I listed every site, database and scheduled job, rebuilt the stack on a new Linux server, and moved each site with a tested rollback plan.',
-    result: 'All 14 sites moved with no lost data and short, planned outages at night. The new server is now patched every month.',
-    tools: 'Linux, Nginx, MySQL, PHP, DNS',
+    kind: 'Infrastructure',
+    title: 'Moving production systems between servers',
+    summary: 'Server-to-server migrations and large-file transfers, with data integrity verified on both ends and disruption kept inside a planned window.',
+    results: ['Integrity verified both ends', 'Cut-overs planned, not improvised'],
+    problem: 'Systems in daily use still have to move — to new hardware, new hosting, or a new platform — without losing data and without taking the business offline in the middle of a working day.',
+    did: 'I treat the move as an inventory first: every site, database and scheduled job that has to come across. Then I rebuild the stack on the destination, transfer in stages, and verify integrity at both ends before anything is pointed at its new home.',
+    result: 'Migrations land inside a planned window, with the data checked rather than assumed.',
+    tools: 'Linux, Apache and Nginx, MySQL/MariaDB, aaPanel',
   },
   {
     id: 'mon',
     visual: 'monitoring',
-    kind: 'Running',
-    title: 'Catching problems before users do',
-    summary: 'Set up performance dashboards and alerts across key applications, with a simple report for managers.',
-    results: ['Problems found earlier', 'Weekly report for leadership'],
-    problem: 'Slowdowns were only discovered when staff complained, and nobody could say which system was at fault.',
-    did: 'I added performance monitoring to the main applications, built dashboards for each, and set alerts that go straight to the team’s chat.',
-    result: 'Most issues are now spotted from an alert, not a complaint, and leadership gets a regular, branded summary.',
-    tools: 'Grafana, Prometheus, alerting, SQL',
-  },
-  {
-    id: 'auto',
-    visual: 'automation',
-    kind: 'Building',
-    title: 'Replacing a paid tool with automation',
-    summary: 'Rebuilt a team’s project boards inside the office suite they already paid for, with automatic reminders.',
-    results: ['Subscription removed', 'Reminders sent automatically'],
-    problem: 'Teams paid for a separate project tool mostly to send deadline reminders, and the data lived outside the company’s systems.',
-    did: 'I recreated each board as a list in the existing office suite, built flows for reminders and approvals, and put it all inside the team chat app.',
-    result: 'The extra subscription was cancelled, and reminders now go out on their own without anyone chasing.',
-    tools: 'Microsoft 365, SharePoint lists, Power Automate, Teams',
+    kind: 'Monitoring',
+    title: 'Catching problems before anyone reports them',
+    summary: 'Availability monitoring across websites, portals and databases, so a failure shows up on a dashboard instead of on the support line.',
+    results: ['Around 35 checks on one dashboard', 'Split by layer, so it points somewhere'],
+    problem: 'Without monitoring, the first sign that something is down is somebody ringing to say so — and nobody can tell which layer is at fault: the site, the server, or the database underneath it.',
+    did: 'I keep availability checks for the websites, portals and databases on a single dashboard, grouped by type so a red row points at the layer it came from. First- and second-line support runs off that same view.',
+    result: 'Problems are visible as they start rather than once they have been noticed, and "is it just me?" is answered in one glance.',
+    tools: 'Grafana, availability checks, Linux, SQL',
   },
   {
     id: 'sec',
     visual: 'security',
-    kind: 'Running',
-    title: 'Closing security findings',
-    summary: 'Worked through scan findings across company domains and sites: email settings, old plugins and exposed services.',
-    results: ['Findings closed', 'Regular scans in place'],
-    problem: 'External scans flagged weak email settings, outdated website plugins and a database open to the internet.',
-    did: 'I ranked findings by risk, fixed the urgent ones first, tightened email authentication and firewall rules, and scheduled regular rescans.',
-    result: 'The serious findings were closed within weeks, and new ones now show up in a monthly scan instead of an audit.',
-    tools: 'DNS, email authentication, firewalls, WordPress, TLS',
+    kind: 'Security',
+    title: 'Untangling connectivity failures and hardening what caused them',
+    summary: 'Multi-layered production failures — TLS certificate mismatches, refused database connections — traced to the layer they actually came from, then closed properly.',
+    results: ['Authentication integrity restored', 'Changes documented, not just made'],
+    problem: 'Connectivity failures rarely sit in one layer. A site that will not load can be a certificate mismatch, a refused database connection, or a service that came back up misconfigured after a crash — and each one looks the same from the outside.',
+    did: 'I work down the stack until the real layer surfaces, fix it there, then harden the configuration so the same failure cannot come back quietly. Infrastructure changes go through a documented change request, and vendor security and compliance paperwork is kept current alongside.',
+    result: 'Authentication integrity and remote connectivity restored, with a change trail showing what moved and why.',
+    tools: 'TLS certificates, MySQL/MariaDB, Apache and Nginx, change management',
+  },
+  {
+    id: 'rec',
+    visual: 'records',
+    kind: 'Data',
+    title: 'Digitising legacy records into a central database',
+    summary: 'Large-scale document digitisation where accuracy, not volume, is the deliverable — quality checks and error tracking on the way in.',
+    results: ['Accuracy checked, not assumed', 'Searchable in one place'],
+    problem: 'Records held on paper cannot be searched, backed up or reported on. A digitisation run measured only on throughput quietly fills the database with errors that are far more expensive to find later.',
+    did: 'I digitise records into a central database and treat integrity as the job: quality checks as the data goes in, error tracking, and sticking to the digitisation protocol rather than chasing raw volume.',
+    result: 'Legacy records become searchable in one place, and accurate enough to report from.',
+    tools: 'MySQL, SQL, quality assurance, data integrity checks',
   },
 ]
 
@@ -260,14 +378,22 @@ export const skills = [
   { name: 'JavaScript', group: 'build' },
   { name: 'TypeScript', group: 'build' },
   { name: 'React', group: 'build' },
+  { name: 'Next.js', group: 'build' },
   { name: 'Node.js', group: 'build' },
   { name: 'PHP', group: 'build' },
   { name: 'Python', group: 'build' },
   { name: 'REST APIs', group: 'build' },
+  { name: 'HTML and CSS', group: 'build' },
+  { name: 'Authentication', group: 'build' },
+  { name: 'Cloudinary', group: 'build' },
   { name: 'WordPress', group: 'build' },
+  { name: 'Elementor', group: 'build' },
   { name: 'Power Automate', group: 'build' },
   { name: 'Linux', group: 'run' },
   { name: 'Nginx', group: 'run' },
+  { name: 'Apache', group: 'run' },
+  { name: 'aaPanel', group: 'run' },
+  { name: 'Vercel', group: 'run' },
   { name: 'Docker', group: 'run' },
   { name: 'Grafana', group: 'run' },
   { name: 'Prometheus', group: 'run' },
@@ -277,8 +403,10 @@ export const skills = [
   { name: 'Microsoft 365', group: 'run' },
   { name: 'SQL', group: 'data' },
   { name: 'MySQL', group: 'data' },
+  { name: 'MariaDB', group: 'data' },
   { name: 'SharePoint lists', group: 'data' },
   { name: 'Backups and restores', group: 'data' },
+  { name: 'Data integrity', group: 'data' },
   { name: 'Change management', group: 'work' },
   { name: 'Incident management', group: 'work' },
   { name: 'Vendor management', group: 'work' },
@@ -288,10 +416,15 @@ export const skills = [
 
 // Which skills each project used. Keys match `cases[].id`, values match `skills[].name`.
 export const skillsByCase = {
-  mig: ['Linux', 'Nginx', 'MySQL', 'PHP', 'WordPress', 'DNS and email security', 'TLS certificates', 'Backups and restores', 'Change management'],
-  mon: ['Grafana', 'Prometheus', 'SQL', 'Linux', 'Incident management', 'Python'],
-  auto: ['Power Automate', 'SharePoint lists', 'Microsoft 365', 'JavaScript', 'Training users', 'Change management'],
-  sec: ['DNS and email security', 'TLS certificates', 'Firewalls', 'WordPress', 'Linux', 'Vendor management', 'Access reviews'],
+  a5: ['React', 'JavaScript', 'HTML and CSS', 'Cloudinary', 'Vercel', 'DNS and email security'],
+  portal: ['React', 'JavaScript', 'Authentication', 'REST APIs', 'Vercel'],
+  camp: ['Next.js', 'React', 'JavaScript', 'HTML and CSS', 'Vercel'],
+  combine: ['HTML and CSS', 'JavaScript', 'Vercel'],
+  tchala: ['React', 'JavaScript', 'Authentication'],
+  mig: ['Linux', 'Apache', 'Nginx', 'aaPanel', 'MySQL', 'MariaDB', 'Backups and restores', 'Data integrity', 'Change management'],
+  mon: ['Grafana', 'Linux', 'SQL', 'Incident management'],
+  sec: ['TLS certificates', 'Firewalls', 'Linux', 'Apache', 'MariaDB', 'Change management', 'Vendor management'],
+  rec: ['MySQL', 'SQL', 'Data integrity'],
 }
 
 /* ---------- Experience ---------- */
@@ -313,7 +446,7 @@ export const experience = [
       'Provide first- and second-line application and technical support across FMDQ Group’s web platforms, internal systems, and infrastructure, covering system monitoring, troubleshooting, and incident resolution.',
       'Diagnose and resolve multi-layered connectivity issues on production systems including SSL/TLS certificate mismatches, and database connection failures.',
       'Administer and troubleshoot Apache/Nginx web servers and aaPanel-managed hosting environments, including WordPress and Elementor CMS compatibility issues across multiple subdirectory sites.',
-      'Identify and remediate database availability issues on MySQL/MariaDB servers, including recovery from out-of-memory failures and correction of insecure service configurations, restoring both authentication integrity and remote connectivity.',
+      'Identify and remediate database availability issues on MySQL/MariaDB servers, including recovery from out-of-memory failures and hardening of service configurations, restoring both authentication integrity and remote connectivity.',
       'Manage server-to-server data migrations and large-file transfers, with attention to data integrity verification and minimal service disruption.',
       'Digitise legacy records into a central database with a focus on data accuracy and integrity.',
       'Test and validate models supporting internal systems, including property ownership verification workflows.',
@@ -376,7 +509,13 @@ export const contact = {
     { label: 'CV', detail: 'PDF, 2 pages', href: '#contact', cv: true },
   ],
   cvLabel: 'Download CV',
-  cvMessage: 'The CV download would start here. In the mockup there’s no file yet.',
+  // No PDF in the repo yet. Drop one in /public and point the CV link at it,
+  // then this message stops being needed.
+  cvMessage: 'The CV isn’t uploaded yet — email me and I’ll send it straight over.',
+  submitLabel: 'Open ticket',
+  sendingLabel: 'Opening ticket…',
+  // {first} {topic} {priority} {email} are filled in once the message has sent.
+  sentNote: 'Thanks, {first}. Topic: {topic}. Priority: {priority}. I’ll reply to {email}.',
   topics: ['A job', 'A project', 'Support for a system', 'Just saying hello'],
   priorities: [
     { label: 'No rush', tone: 'low' },
@@ -387,6 +526,7 @@ export const contact = {
     name: 'Add your name so I know who to reply to.',
     email: 'Add an email address I can reply to.',
     details: 'Add a few details about what you need.',
+    send: 'That didn’t send — email danieloluwanifemi2002@gmail.com directly and I’ll pick it up there.',
   },
   steps: [
     { title: 'Received', note: 'Your message is in my inbox' },

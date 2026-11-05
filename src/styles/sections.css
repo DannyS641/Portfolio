@@ -575,6 +575,17 @@
 
 .case .vis svg { width: 100%; height: 100%; display: block }
 
+/* Site screenshots. Anchored to the top so the crop keeps the header and hero,
+   which is the part worth seeing, whatever shape the card ends up. */
+.case .vis img,
+.cd-vis img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
 .case .tx { padding: 1.3rem 1.4rem 1.5rem }
 .case .kind { font-weight: 600; color: var(--signal); font-size: .95rem }
 .case h3 { font-size: clamp(1.7rem, 2.8vw, 2.3rem); margin: .4rem 0 .6rem }
@@ -621,44 +632,165 @@
   .work-grid { grid-template-columns: 1fr }
 }
 
-/* shared palette for the animated case SVGs */
-.vis .e { fill: none; stroke: var(--line); stroke-width: 2 }
-.vis .k { fill: none; stroke: var(--ink); stroke-width: 2 }
-.vis .sig { fill: var(--signal) }
-.vis .sigs { stroke: var(--signal) }
-.vis .okf { fill: var(--ok) }
-.vis .oks { stroke: var(--ok) }
-.vis .wf { fill: var(--warn) }
-.vis .ws { stroke: var(--warn) }
-.vis .bf { fill: var(--bad) }
-.vis .pf { fill: var(--surface); stroke: var(--ink); stroke-width: 2 }
-.vis text { fill: var(--ink); font: 600 13px var(--body) }
-.vis text.s { fill: var(--soft); font-weight: 500 }
+/* ---------- work deck ----------
+ *
+ * All of this is behind `has-deck`, which the script puts on <html> only when
+ * the deck is actually running. Reduced motion, a disabled deck and a script
+ * that never ran all keep the plain grid above.
+ */
+.work-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.deck-meta { display: none }
+
+html.has-deck #work { padding: 0 }
+
+html.has-deck .work-pin {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(64px + 1.5rem) 0 1.5rem;
+}
+
+html.has-deck .deck-meta {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  gap: 0 .4rem;
+}
+
+.deck-n {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(3rem, 6vw, 4.6rem);
+  line-height: .9;
+  color: var(--signal);
+  font-variant-numeric: tabular-nums;
+}
+
+.deck-of { font-family: var(--display); font-weight: 700; font-size: 1.5rem; color: var(--soft) }
+
+.deck-bar {
+  grid-column: 1/-1;
+  height: 4px;
+  width: 160px;
+  margin-top: .6rem;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.deck-bar i { display: block; height: 100%; background: var(--signal); transform-origin: 0 50%; transform: scaleX(.25) }
+.deck-hint { grid-column: 1/-1; color: var(--soft); font-weight: 500; font-size: .9rem; margin-top: .5rem }
+
+html.has-deck .work-grid {
+  display: block;
+  position: relative;
+  height: clamp(380px, 58vh, 560px);
+  margin-top: 1.8rem;
+}
+
+html.has-deck .case {
+  position: absolute;
+  inset: 0;
+  flex-direction: row;
+  box-shadow: 0 30px 60px -30px rgba(14, 27, 61, .45);
+  will-change: transform;
+}
+
+html.has-deck .case .vis {
+  aspect-ratio: auto;
+  flex: 0 0 56%;
+  border-bottom: 0;
+  border-right: 1.5px solid var(--line);
+}
+
+html.has-deck .case .tx {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.2rem, 3vw, 2.4rem);
+}
+
+html.has-deck .case h3 { font-size: clamp(1.8rem, 3.4vw, 2.9rem) }
+html.has-deck .case.back { pointer-events: none }
+
+@media (max-width: 760px) {
+  html.has-deck .work-grid { height: clamp(440px, 64vh, 600px) }
+  html.has-deck .case { flex-direction: column }
+  html.has-deck .case .vis { flex: 0 0 38%; border-right: 0; border-bottom: 1.5px solid var(--line) }
+  html.has-deck .case .tx { justify-content: flex-start; padding: 1rem 1.1rem }
+  html.has-deck .case p { font-size: .95rem }
+  html.has-deck .case .res { margin-top: .6rem }
+  html.has-deck .case .open { margin-top: .6rem }
+  .work-head .lede { font-size: 1rem }
+}
+
+/* shared palette for the animated case SVGs, on the cards and in the dialog */
+.vis .e, .cd-vis .e { fill: none; stroke: var(--line); stroke-width: 2 }
+.vis .k, .cd-vis .k { fill: none; stroke: var(--ink); stroke-width: 2 }
+.vis .sig, .cd-vis .sig { fill: var(--signal) }
+.vis .sigs, .cd-vis .sigs { stroke: var(--signal) }
+.vis .okf, .cd-vis .okf { fill: var(--ok) }
+.vis .oks, .cd-vis .oks { stroke: var(--ok) }
+.vis .wf, .cd-vis .wf { fill: var(--warn) }
+.vis .ws, .cd-vis .ws { stroke: var(--warn) }
+.vis .bf, .cd-vis .bf { fill: var(--bad) }
+.vis .pf, .cd-vis .pf { fill: var(--surface); stroke: var(--ink); stroke-width: 2 }
+.vis text, .cd-vis text { fill: var(--ink); font: 600 13px var(--body) }
+.vis text.s, .cd-vis text.s { fill: var(--soft); font-weight: 500 }
+/* label sitting on top of a filled signal/ok shape, so it stays white in both themes */
+.vis text.on-fill, .cd-vis text.on-fill { fill: #fff }
 
 /* ---------- case dialog ---------- */
 
 dialog.case-dlg {
+  --cd-pad: clamp(1.4rem, 4vw, 2.4rem);
   border: 0;
   padding: 0;
   width: min(860px, calc(100vw - 2rem));
-  max-height: calc(100vh - 2rem);
+  /* dvh, so phone browser chrome doesn't push the bottom off screen */
+  max-height: calc(100dvh - 2rem);
   border-radius: 22px;
   background: var(--surface);
   color: var(--ink);
-  overflow: auto;
+  /* The body scrolls rather than the whole dialog, so the picture and the
+     close button stay put while you read. */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 dialog.case-dlg::backdrop { background: rgba(9, 15, 33, .6) }
 
 .cd-vis {
   aspect-ratio: 16/7;
+  /* On a short window the picture would otherwise take half the dialog and
+     push the text out of reach. The SVG letterboxes inside whatever is left. */
+  max-height: min(34vh, 300px);
+  flex: none;
   background: var(--paper);
   border-bottom: 1.5px solid var(--line);
 }
 
 .cd-vis svg { width: 100%; height: 100%; display: block }
 
-.cd-body { padding: clamp(1.4rem, 4vw, 2.4rem) }
+.cd-body {
+  padding: var(--cd-pad);
+  /* min-height:0 lets a flex item shrink below its content, which is what
+     makes it scroll instead of stretching the dialog past the viewport */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 .cd-body h3 { font-size: clamp(2rem, 4vw, 3rem); margin: .3rem 0 1.2rem }
 
 .cd-cols {
@@ -672,13 +804,32 @@ dialog.case-dlg::backdrop { background: rgba(9, 15, 33, .6) }
    than a phone, and the one place justify fails even on a big screen */
 .cd-cols p { margin: 0; color: var(--soft); text-align: left }
 
-.cd-top {
-  display: flex;
-  justify-content: space-between;
+.cd-live {
+  display: inline-flex;
   align-items: center;
+  gap: .45rem;
+  margin-top: .4rem;
+  font-weight: 600;
+  color: var(--signal);
+  text-align: left;
 }
 
-.cd-kind { font-weight: 600; color: var(--signal) }
+.cd-live svg { width: 1em; height: 1em; flex: none }
+.cd-live:hover { text-decoration: underline }
+.cd-live:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; border-radius: 4px }
+
+.cd-kind { display: block; font-weight: 600; color: var(--signal) }
+
+/* Floats over the picture rather than sitting in the scrolling body, so it is
+   always reachable and never paints over the heading. The dialog is already
+   position:fixed while modal, so that is the containing block. */
+.case-dlg .x {
+  position: absolute;
+  top: .85rem;
+  right: .85rem;
+  z-index: 2;
+  background: var(--surface);
+}
 
 .cd-tools {
   margin: 1.4rem 0 0;
@@ -977,6 +1128,18 @@ dialog.case-dlg::backdrop { background: rgba(9, 15, 33, .6) }
 .chipset .p-low i { background: var(--ok) }
 .chipset .p-mid i { background: var(--warn) }
 .chipset .p-high i { background: var(--bad) }
+
+/* The honeypot. Off-screen rather than display:none, which some bots skip. */
+.botcheck {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tform .btn[disabled] { opacity: .6; cursor: progress }
 
 .terr {
   color: var(--bad);

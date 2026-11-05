@@ -11,6 +11,26 @@ export function setLenis(instance) {
 }
 
 /**
+ * Freeze the page behind a modal.
+ *
+ * Lenis listens for wheel events on the window and preventDefault()s them, so
+ * without this a wheel over an open dialog scrolls the page underneath while
+ * the dialog itself stays put. Stopping Lenis for as long as the dialog is open
+ * is the other half of the fix; `data-lenis-prevent` on the scrolling element
+ * is what lets the dialog scroll itself.
+ */
+export function lockScroll(locked) {
+  if (lenis) {
+    if (locked) lenis.stop()
+    else lenis.start()
+    return
+  }
+  // No Lenis running (reduced motion): lock the page directly instead. The
+  // native scrollbar is already hidden, so nothing shifts.
+  document.documentElement.style.overflow = locked ? 'hidden' : ''
+}
+
+/**
  * Scroll to a selector. Falls back to native scrolling when Lenis isn't running
  * (reduced motion, or before the hook has mounted).
  */

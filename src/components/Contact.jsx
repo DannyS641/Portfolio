@@ -1,27 +1,47 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { gsap } from '../lib/gsap'
 import { contact } from '../content'
+import { sendTicket } from '../lib/sendTicket'
 
 const EMAIL = /^\S+@\S+\.\S+$/
 const TONE_CLASS = { low: 'p-low', mid: 'p-mid', high: 'p-high' }
 
-const newTicketId = () => `#${1040 + Math.floor(Math.random() * 60)}`
+/**
+ * A reference the sender can quote back, not a running count.
+ *
+ * This used to be a random number between #1040 and #1099, which claimed a
+ * thousand previous tickets on a form that had never been submitted, and could
+ * hand two people the same number. Date plus a short random suffix is unique
+ * and claims nothing.
+ */
+const newTicketId = () => {
+  const now = new Date()
+  const stamp = [now.getFullYear() % 100, now.getMonth() + 1, now.getDate()]
+    .map((part) => String(part).padStart(2, '0'))
+    .join('')
+  return `#${stamp}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`
+}
 
-/** The contact form, dressed up as a support ticket. Front end only — nothing is sent. */
+const blankForm = () => ({
+  name: '',
+  email: '',
+  topic: contact.topics[0],
+  priority: contact.priorities[0].label,
+  details: '',
+  // Hidden from people, irresistible to bots. Anything in here means spam.
+  botcheck: '',
+})
+
+/** The contact form, dressed up as a support ticket. Posts through Web3Forms. */
 export default function Contact({ animate, cvSignal, onCvClick }) {
   const sectionRef = useRef(null)
   const doneRef = useRef(null)
   const stepRefs = useRef([])
   const uid = useId()
 
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    topic: contact.topics[0],
-    priority: contact.priorities[0].label,
-    details: '',
-  })
+  const [form, setForm] = useState(blankForm)
   const [error, setError] = useState('')
+  const [sending, setSending] = useState(false)
   const [ticket, setTicket] = useState(null)
   const [stepsDone, setStepsDone] = useState(0)
 
@@ -71,34 +91,52 @@ export default function Contact({ animate, cvSignal, onCvClick }) {
     return () => { intro.kill(); tick.kill() }
   }, [ticket, animate])
 
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault()
+    if (sending) return
+
     const name = form.name.trim()
+    const email = form.email.trim()
+    const details = form.details.trim()
 
     if (!name) return setError(contact.errors.name)
-    if (!EMAIL.test(form.email.trim())) return setError(contact.errors.email)
-    if (!form.details.trim()) return setError(contact.errors.details)
+    if (!EMAIL.test(email)) return setError(contact.errors.email)
+    if (!details) return setError(contact.errors.details)
+
+    // A bot filled a field no person can see. Say nothing, send nothing.
+    if (form.botcheck) return
 
     setError('')
+    const reference = newTicketId()
+
+    setSending(true)
+    try {
+      await sendTicket({ reference, name, email, topic: form.topic, priority: form.priority, details })
+    } catch (cause) {
+      // The ticket screen promises a reply, so it only appears once the message
+      // has actually left. A failure says so and gives the address instead.
+      console.error('Ticket send failed:', cause)
+      return setError(contact.errors.send)
+    } finally {
+      setSending(false)
+    }
+
     setStepsDone(0)
     setTicket({
-      id: newTicketId(),
-      note: `Thanks, ${name.split(' ')[0]}. Topic: ${form.topic.toLowerCase()}. `
-        + `Priority: ${form.priority.toLowerCase()}. `
-        + `In the real site, a copy goes to ${form.email.trim()}.`,
+      id: reference,
+      note: contact.sentNote
+        .replace('{first}', name.split(' ')[0])
+        .replace('{topic}', form.topic.toLowerCase())
+        .replace('{priority}', form.priority.toLowerCase())
+        .replace('{email}', email),
     })
   }
 
   function reset() {
     setTicket(null)
     setStepsDone(0)
-    setForm({
-      name: '',
-      email: '',
-      topic: contact.topics[0],
-      priority: contact.priorities[0].label,
-      details: '',
-    })
+    setError('')
+    setForm(blankForm())
   }
 
   return (
@@ -184,8 +222,22 @@ export default function Contact({ animate, cvSignal, onCvClick }) {
                   </div>
                 </div>
 
+                {/* Hidden from people and from screen readers; bots fill it in. */}
+                <input
+                  className="botcheck"
+                  type="text"
+                  name="botcheck"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={form.botcheck}
+                  onChange={set('botcheck')}
+                />
+
                 <p className="terr" role="alert">{error}</p>
-                <button className="btn" type="submit">Open ticket</button>
+                <button className="btn" type="submit" disabled={sending}>
+                  {sending ? contact.sendingLabel : contact.submitLabel}
+                </button>
               </form>
             ) : (
               <div className="tdone" role="status" tabIndex={-1} ref={doneRef}>
