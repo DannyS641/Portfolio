@@ -1,0 +1,213 @@
+/* Page furniture: typography, buttons, header, footer, progress bar. */
+
+.wrap {
+  width: min(1200px, 100% - 2.5rem);
+  margin-inline: auto;
+}
+
+h1, h2, h3 {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -.01em;
+  line-height: 1;
+  margin: 0;
+  /* display type is set tight; justifying it opens ugly gaps between words */
+  text-align: left;
+}
+
+/* Body copy is justified from :root — these are the exceptions. */
+h4,
+nav.links,
+.menu-btn,
+.logo,
+.btn,
+.chipset span,
+.proj-pick button,
+.skill,
+.svc-row b,
+.legend,
+footer .wrap { text-align: left }
+
+h2.t { font-size: clamp(2.6rem, 6vw, 4.8rem) }
+
+.lede {
+  color: var(--soft);
+  font-size: 1.15rem;
+  max-width: 54ch;
+  margin: 1rem 0 0;
+}
+
+section { position: relative }
+
+.pad { padding: clamp(5rem, 11vw, 8.5rem) 0 }
+
+/* Sections that follow one with its own bottom padding. */
+.pad-top-0 { padding-top: 0 }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 50px;
+  padding: .8rem 1.4rem;
+  border-radius: 10px;
+  background: var(--signal);
+  color: var(--signal-ink);
+  font: 600 1rem var(--body);
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.btn:hover { filter: brightness(1.08) }
+
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+}
+
+/* Visually hidden, still read out. */
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- header ---------- */
+
+.progress {
+  position: fixed;
+  top: env(safe-area-inset-top, 0px);
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--signal);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 70;
+}
+
+header.site {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+header.site .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  gap: 1rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  text-decoration: none;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.logo .st {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 25%, transparent);
+}
+
+nav.links {
+  display: flex;
+  gap: 1.6rem;
+  align-items: center;
+}
+
+nav.links a {
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--soft);
+}
+
+nav.links a:hover,
+nav.links a.on { color: var(--ink) }
+
+nav.links .btn {
+  color: var(--signal-ink);
+  min-height: 42px;
+  padding: .45rem 1rem;
+}
+
+.menu-btn {
+  display: none;
+  font: 600 1rem var(--body);
+  background: none;
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: .45rem 1rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  nav.links {
+    position: fixed;
+    inset: calc(64px + env(safe-area-inset-top, 0px)) 0 auto 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    padding: .5rem 1.25rem 1.25rem;
+    display: none;
+  }
+
+  nav.links.open { display: flex }
+
+  nav.links a {
+    padding: .85rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 1.1rem;
+  }
+
+  nav.links .btn {
+    margin-top: 1rem;
+    border: 0;
+  }
+
+  .menu-btn { display: block }
+}
+
+/* ---------- footer ---------- */
+
+footer {
+  border-top: 1px solid var(--line);
+  padding: 2rem 0 2.5rem;
+  color: var(--soft);
+  font-size: .95rem;
+}
+
+footer .wrap {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+footer a { text-decoration: none }
+footer a:hover { color: var(--signal) }

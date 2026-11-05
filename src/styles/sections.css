@@ -1,0 +1,1105 @@
+/* One block per section component. */
+
+/* ---------- boot screen ---------- */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #0A1022;
+  color: #CFE0FF;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  transform-origin: 50% 50%;
+}
+
+.boot pre {
+  margin: 0;
+  text-align: left;
+  font: 500 clamp(.85rem, 1.6vw, 1.05rem)/1.7 "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  white-space: pre-wrap;
+  width: min(620px, 100%);
+  min-height: 12em;
+}
+
+.boot .ok { color: #3DDC84 }
+
+.boot .cur {
+  display: inline-block;
+  width: .6em;
+  height: 1.1em;
+  background: #CFE0FF;
+  vertical-align: -.15em;
+  animation: blink .8s steps(1) infinite;
+}
+
+/* The white line left behind as the "monitor" switches off. */
+.boot .line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: #fff;
+  opacity: 0;
+}
+
+.boot .skip {
+  all: unset;
+  position: absolute;
+  right: 1.2rem;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.2rem);
+  cursor: pointer;
+  color: #9AA6C1;
+  font: 600 .95rem var(--body);
+  padding: .6rem 1rem;
+  border: 1.5px solid rgba(207, 224, 255, .3);
+  border-radius: 10px;
+}
+
+.boot .skip:focus-visible { outline: 3px solid #5B8BFF }
+
+/* ---------- particle hero ---------- */
+
+.phero {
+  position: relative;
+  height: 100vh;
+  min-height: 560px;
+  overflow: hidden;
+}
+
+.phero canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+
+.phero .ov {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  padding: calc(64px + 1.6rem) 0 calc(env(safe-area-inset-bottom, 0px) + 2rem);
+}
+
+.phero .ov .wrap {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.phero .who {
+  font-weight: 600;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin: 0;
+}
+
+.phero .who i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ok);
+  position: relative;
+}
+
+.phero .who i::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid var(--ok);
+  animation: ping 2s infinite;
+}
+
+.phero .bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.caps {
+  position: relative;
+  min-height: clamp(2.6rem, 6vw, 5rem);
+  flex: 1 1 min(420px, 100%);
+}
+
+.caps p {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5.4vw, 4.6rem);
+  line-height: 1;
+  opacity: 0;
+}
+
+.caps p.on { opacity: 1 }
+
+.hint {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .6rem;
+  color: var(--soft);
+  font-weight: 600;
+  font-size: .95rem;
+  text-align: right;
+}
+
+.hint .acts {
+  display: flex;
+  gap: .6rem;
+  pointer-events: auto;
+}
+
+.phase {
+  display: flex;
+  gap: .4rem;
+  margin-top: .2rem;
+}
+
+.phase i {
+  width: 26px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line);
+  transition: background .3s, width .3s;
+}
+
+.phase i.on {
+  background: var(--signal);
+  width: 44px;
+}
+
+/* ---------- system diagram ---------- */
+
+.system .wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.diagram {
+  position: relative;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  padding: 1rem;
+  box-shadow: 0 30px 60px -40px rgba(14, 27, 61, .45);
+}
+
+.diagram svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.diagram .edge {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 2.5;
+}
+
+.diagram .node rect {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.diagram .node text {
+  fill: var(--ink);
+  font: 600 15px var(--body);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.diagram .node { cursor: pointer }
+
+.diagram .node:hover rect,
+.diagram .node:focus rect,
+.diagram .node.hot rect {
+  stroke: var(--signal);
+  stroke-width: 3;
+}
+
+.diagram .node:focus { outline: none }
+
+.diagram .node .led { fill: var(--ok) }
+.diagram .node.alert .led { fill: var(--warn) }
+
+/* Halo that pulses around whichever part the automatic tour is showing. */
+.diagram .node .ring {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 2.5;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.diagram .node.touring .ring { animation: nodering 1.8s ease-out infinite }
+
+@keyframes nodering {
+  0% { opacity: .55; transform: scale(1) }
+  70% { opacity: 0; transform: scale(1.16) }
+  100% { opacity: 0; transform: scale(1.16) }
+}
+
+.diagram .pk { fill: var(--signal) }
+.diagram .pk.warn { fill: var(--warn) }
+
+.dtip {
+  min-height: 4.6em;
+  margin: .6rem .4rem .2rem;
+  color: var(--soft);
+  font-weight: 500;
+}
+
+.dtip b {
+  color: var(--ink);
+  display: block;
+  font-family: var(--display);
+  font-size: 1.25rem;
+}
+
+.dlog {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: .2rem .4rem 0;
+  font-weight: 600;
+  font-size: .92rem;
+  color: var(--ok);
+  min-height: 1.6em;
+}
+
+.dlog.warn { color: var(--warn) }
+
+/* Instruction line under the diagram, with the tap icon. */
+.dhint {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin: .9rem .4rem .7rem;
+  color: var(--soft);
+  font-weight: 500;
+  font-size: .95rem;
+  text-align: left;
+}
+
+.dhint svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  margin-top: .15rem;
+  color: var(--signal);
+}
+
+/* min-width:0 lets the text shrink and wrap beside the icon instead of
+   being pushed onto a line of its own */
+.dhint span {
+  flex: 1 1 12ch;
+  min-width: 0;
+}
+
+.dhint .stop {
+  all: unset;
+  cursor: pointer;
+  margin-left: auto;
+  color: var(--signal);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.dhint .stop:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* One button per part — the primary way in on a phone. */
+.dpick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin: 0 .4rem;
+}
+
+.dpick button {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0 .95rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 .95rem var(--body);
+  text-align: left;
+  display: inline-flex;
+  align-items: center;
+  transition: background .25s, border-color .25s, color .25s;
+}
+
+.dpick button:hover { border-color: var(--signal) }
+
+.dpick button[aria-pressed="true"] {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--signal-ink);
+}
+
+.dpick button:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px }
+
+@media (max-width: 900px) {
+  .system .wrap { grid-template-columns: 1fr }
+  .hint { align-items: flex-start; text-align: left }
+}
+
+/* ---------- uptime strip ---------- */
+
+.status {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  padding: clamp(1.2rem, 3vw, 2rem);
+}
+
+.status-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+.status-head h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem) }
+.status-head p { margin: .3rem 0 0; color: var(--soft) }
+
+.allok {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 600;
+  color: var(--ok);
+}
+
+.allok i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.svc-row {
+  display: grid;
+  grid-template-columns: 13rem 1fr 6rem;
+  gap: 1rem;
+  align-items: center;
+  padding: .7rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.svc-row b { font-weight: 600 }
+
+.bars {
+  display: flex;
+  gap: 2px;
+  height: 30px;
+  align-items: stretch;
+}
+
+.bars i {
+  flex: 1;
+  border-radius: 2px;
+  background: var(--ok);
+  transform-origin: 50% 100%;
+}
+
+.bars i.w { background: var(--warn) }
+
+.svc-row span.up {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend {
+  display: flex;
+  justify-content: space-between;
+  color: var(--soft);
+  font-size: .88rem;
+  margin-top: .5rem;
+  padding-left: 14rem;
+  padding-right: 7rem;
+}
+
+@media (max-width: 760px) {
+  .svc-row { grid-template-columns: 1fr auto }
+  .svc-row .bars { grid-column: 1/-1; order: 3 }
+  .legend { padding: 0 }
+}
+
+/* ---------- build / run switch ---------- */
+
+.br-switch {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 5px;
+  gap: 5px;
+  margin-top: 2rem;
+  position: relative;
+}
+
+.br-switch button {
+  all: unset;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  min-height: 48px;
+  padding: 0 1.6rem;
+  border-radius: 10px;
+  font: 600 1.1rem var(--body);
+  display: inline-flex;
+  align-items: center;
+  transition: color .3s;
+}
+
+.br-switch button[aria-selected="true"] { color: var(--signal-ink) }
+.br-switch button:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px }
+
+.br-switch .thumb {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  border-radius: 10px;
+  background: var(--signal);
+  z-index: 0;
+}
+
+.br-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 6vw, 5rem);
+  margin-top: 2.5rem;
+  align-items: start;
+}
+
+.br-panel h3 { font-size: clamp(2.2rem, 4.6vw, 3.8rem); line-height: 1 }
+
+.br-panel p {
+  color: var(--soft);
+  font-size: 1.15rem;
+  margin: 1rem 0 0;
+  max-width: 44ch;
+}
+
+.br-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: .75rem;
+}
+
+.br-list li {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 1rem;
+  align-items: center;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: .9rem 1rem;
+}
+
+.br-list li svg { width: 44px; height: 44px; color: var(--signal) }
+.br-list li b { display: block; font-weight: 600 }
+.br-list li span { color: var(--soft); font-size: .97rem }
+
+@media (max-width: 860px) {
+  .br-panel { grid-template-columns: 1fr }
+}
+
+/* ---------- work ---------- */
+
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+
+.case {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.case:hover { border-color: var(--signal) }
+
+/* the whole card is the hit area, but only the button is in the tab order */
+.case:has(.open:focus-visible) { outline: 3px solid var(--signal); outline-offset: 3px }
+
+.case .vis {
+  aspect-ratio: 16/8;
+  background: var(--paper);
+  border-bottom: 1.5px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+.case .vis svg { width: 100%; height: 100%; display: block }
+
+.case .tx { padding: 1.3rem 1.4rem 1.5rem }
+.case .kind { font-weight: 600; color: var(--signal); font-size: .95rem }
+.case h3 { font-size: clamp(1.7rem, 2.8vw, 2.3rem); margin: .4rem 0 .6rem }
+.case p { margin: 0; color: var(--soft) }
+
+.case .res {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: 1rem;
+}
+
+.case .res span {
+  background: color-mix(in srgb, var(--ok) 14%, transparent);
+  color: var(--ok);
+  border-radius: 6px;
+  padding: .2rem .6rem;
+  font-weight: 600;
+  font-size: .88rem;
+}
+
+.case .open {
+  all: unset;
+  display: block;
+  cursor: pointer;
+  text-align: left;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* stretches the button over the card so clicking anywhere opens it */
+.case .open::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.case .open:focus-visible { outline: none }
+
+@media (max-width: 860px) {
+  .work-grid { grid-template-columns: 1fr }
+}
+
+/* shared palette for the animated case SVGs */
+.vis .e { fill: none; stroke: var(--line); stroke-width: 2 }
+.vis .k { fill: none; stroke: var(--ink); stroke-width: 2 }
+.vis .sig { fill: var(--signal) }
+.vis .sigs { stroke: var(--signal) }
+.vis .okf { fill: var(--ok) }
+.vis .oks { stroke: var(--ok) }
+.vis .wf { fill: var(--warn) }
+.vis .ws { stroke: var(--warn) }
+.vis .bf { fill: var(--bad) }
+.vis .pf { fill: var(--surface); stroke: var(--ink); stroke-width: 2 }
+.vis text { fill: var(--ink); font: 600 13px var(--body) }
+.vis text.s { fill: var(--soft); font-weight: 500 }
+
+/* ---------- case dialog ---------- */
+
+dialog.case-dlg {
+  border: 0;
+  padding: 0;
+  width: min(860px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  border-radius: 22px;
+  background: var(--surface);
+  color: var(--ink);
+  overflow: auto;
+}
+
+dialog.case-dlg::backdrop { background: rgba(9, 15, 33, .6) }
+
+.cd-vis {
+  aspect-ratio: 16/7;
+  background: var(--paper);
+  border-bottom: 1.5px solid var(--line);
+}
+
+.cd-vis svg { width: 100%; height: 100%; display: block }
+
+.cd-body { padding: clamp(1.4rem, 4vw, 2.4rem) }
+.cd-body h3 { font-size: clamp(2rem, 4vw, 3rem); margin: .3rem 0 1.2rem }
+
+.cd-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.cd-cols h4 { margin: 0 0 .3rem; font-size: 1rem }
+/* three columns inside an 860px dialog is only ~30 chars a line — narrower
+   than a phone, and the one place justify fails even on a big screen */
+.cd-cols p { margin: 0; color: var(--soft); text-align: left }
+
+.cd-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cd-kind { font-weight: 600; color: var(--signal) }
+
+.cd-tools {
+  margin: 1.4rem 0 0;
+  color: var(--soft);
+  font-weight: 500;
+}
+
+.x {
+  all: unset;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+}
+
+.x:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px }
+
+@media (max-width: 700px) {
+  .cd-cols { grid-template-columns: 1fr }
+}
+
+/* ---------- skills ---------- */
+
+.sk-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  margin-top: 2.5rem;
+  align-items: start;
+}
+
+.proj-pick { display: grid; gap: .5rem }
+
+.proj-pick button {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  /* `all: unset` re-inherits text-align, and this file loads after layout.css,
+     so the justify opt-out has to be repeated here */
+  text-align: left;
+  padding: .85rem 1rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.proj-pick button small { color: var(--soft); font-weight: 500 }
+
+.proj-pick button[aria-pressed="true"] {
+  border-color: var(--signal);
+  box-shadow: 0 0 0 2px var(--signal);
+}
+
+.proj-pick button:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px }
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-content: flex-start;
+}
+
+.skill {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .55rem 1rem;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  font-weight: 600;
+  transition: border-color .35s, background .35s, color .35s;
+}
+
+.skill i { width: 9px; height: 9px; border-radius: 50% }
+
+.skill[data-g="build"] i { background: var(--signal) }
+.skill[data-g="run"] i { background: var(--ok) }
+.skill[data-g="data"] i { background: var(--warn) }
+.skill[data-g="work"] i { background: var(--bad) }
+
+.skills.filtering .skill { opacity: .25 }
+
+.skills.filtering .skill.lit {
+  opacity: 1;
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.sk-key {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin-top: 1.2rem;
+  color: var(--soft);
+  font-weight: 500;
+  font-size: .95rem;
+}
+
+.sk-key span { display: inline-flex; align-items: center; gap: .4rem }
+.sk-key i { width: 9px; height: 9px; border-radius: 50%; display: inline-block }
+
+@media (max-width: 860px) {
+  .sk-grid { grid-template-columns: 1fr }
+}
+
+/* ---------- experience timeline ---------- */
+
+.tl {
+  position: relative;
+  margin-top: 3rem;
+  padding-left: 3rem;
+}
+
+.tl .rail {
+  position: absolute;
+  left: 11px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--line);
+  border-radius: 2px;
+}
+
+.tl .rail i {
+  position: absolute;
+  inset: 0;
+  background: var(--signal);
+  transform-origin: 50% 0;
+  transform: scaleY(0);
+  border-radius: 2px;
+}
+
+.tl .runner {
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--signal) 22%, transparent);
+}
+
+.role { position: relative; padding: 0 0 3rem }
+
+.role:last-child { padding-bottom: 0 }
+
+.role::before {
+  content: "";
+  position: absolute;
+  left: calc(-3rem + 4px);
+  top: .5rem;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 3px solid var(--line);
+  box-sizing: border-box;
+}
+
+.role.on::before { border-color: var(--signal) }
+
+.role .when { font-weight: 600; color: var(--soft) }
+.role h3 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); margin: .3rem 0 .2rem }
+.role .org { font-weight: 600 }
+
+.role ul {
+  margin: .8rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--soft);
+  max-width: 66ch;
+}
+
+.role li { margin: .25rem 0 }
+
+/* ---------- contact ticket ---------- */
+
+.ticket {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  margin-top: 2.5rem;
+  align-items: start;
+}
+
+.reach { display: grid; gap: .6rem }
+
+.reach a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.reach a small { color: var(--soft); font-weight: 500 }
+.reach a:hover { border-color: var(--signal) }
+
+.tform {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  padding: clamp(1.3rem, 3vw, 2rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.tform .grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tform .full { grid-column: 1/-1 }
+
+.tform label.l,
+.tform legend {
+  display: block;
+  font-weight: 600;
+  font-size: .95rem;
+  margin-bottom: .35rem;
+  padding: 0;
+}
+
+.tform fieldset { border: 0; margin: 0; padding: 0 }
+
+.tform input,
+.tform textarea {
+  width: 100%;
+  font: 500 1rem var(--body);
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: .75rem .85rem;
+  min-height: 48px;
+}
+
+.tform input:focus,
+.tform textarea:focus { border-color: var(--signal); outline: none }
+
+.tform textarea { min-height: 130px; resize: vertical }
+
+.chipset { display: flex; flex-wrap: wrap; gap: .5rem }
+.chipset label { position: relative; cursor: pointer }
+
+.chipset input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+}
+
+.chipset span {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  font-weight: 600;
+}
+
+.chipset span i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--soft);
+}
+
+.chipset input:checked + span {
+  border-color: var(--signal);
+  background: color-mix(in srgb, var(--signal) 12%, transparent);
+}
+
+.chipset input:focus-visible + span { outline: 3px solid var(--signal); outline-offset: 2px }
+
+.chipset .p-low i { background: var(--ok) }
+.chipset .p-mid i { background: var(--warn) }
+.chipset .p-high i { background: var(--bad) }
+
+.terr {
+  color: var(--bad);
+  font-weight: 600;
+  min-height: 1.5em;
+  margin: .6rem 0 0;
+}
+
+.tdone h3 { font-size: clamp(2rem, 4vw, 3rem) }
+
+.tdone .tid {
+  font-family: var(--display);
+  font-weight: 700;
+  color: var(--signal);
+  font-size: 1.3rem;
+}
+
+.tdone .tmsg { color: var(--soft); margin: 0 0 1.2rem }
+
+.steps {
+  list-style: none;
+  margin: 1.5rem 0;
+  padding: 0;
+  display: grid;
+  gap: .8rem;
+}
+
+.steps li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: .8rem;
+  align-items: center;
+  font-weight: 600;
+}
+
+.steps li i {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2.5px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.steps li.ok i { background: var(--ok); border-color: var(--ok) }
+.steps li small { display: block; color: var(--soft); font-weight: 500 }
+
+@media (max-width: 860px) {
+  .ticket { grid-template-columns: 1fr }
+  .tform .grid2 { grid-template-columns: 1fr }
+}
+
+/* ---------- collapsed blocks ("Read more") ---------- */
+
+/* Everything stays in the DOM and is clipped, so nothing is lost to screen
+   readers. The rules only bite on narrow screens; React adds .clamped there. */
+@media (max-width: 860px) {
+  .clamped {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .clamped::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 3.5rem;
+    background: linear-gradient(to bottom, transparent, var(--paper));
+    pointer-events: none;
+  }
+
+  /* roomy enough to show a whole bullet plus the start of the next, so the
+     fade reads as "there's more" rather than as a sentence cut in half */
+  .role ul.clamped { max-height: 15rem }
+
+  .skills.clamped { max-height: 11.5rem }
+  /* shorter fade over the chips, or the last row reads as greyed-out */
+  .skills.clamped::after { height: 2rem }
+}
+
+.more {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  cursor: pointer;
+  min-height: 44px;
+  margin-top: .5rem;
+  color: var(--signal);
+  font: 600 .98rem var(--body);
+  text-align: left;
+}
+
+.more:hover { text-decoration: underline; text-underline-offset: 4px }
+
+.more:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.more svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  transition: transform .25s;
+}
+
+.more[aria-expanded="true"] svg { transform: rotate(180deg) }
+
+.role .more { margin-left: 0 }
+
+@media (prefers-reduced-motion: reduce) {
+  .more svg { transition: none }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .phero .who i::after,
+  .boot .cur,
+  .diagram .node.touring .ring { animation: none }
+}

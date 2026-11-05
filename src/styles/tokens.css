@@ -1,0 +1,132 @@
+/* Design tokens, themes and element defaults. */
+
+:root {
+  --paper: #F4F6F9;
+  --surface: #FFFFFF;
+  --ink: #0E1B3D;
+  --soft: #55607A;
+  --line: rgba(14, 27, 61, .14);
+  --grid: rgba(14, 27, 61, .055);
+  --signal: #2F6BFF;
+  --signal-ink: #FFFFFF;
+  --ok: #1E9E5A;
+  --warn: #E0A100;
+  --bad: #D6453D;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0C1326;
+    --surface: #141D36;
+    --ink: #E6EBF5;
+    --soft: #9AA6C1;
+    --line: rgba(230, 235, 245, .14);
+    --grid: rgba(230, 235, 245, .05);
+    --signal: #5B8BFF;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #0C1326;
+  --surface: #141D36;
+  --ink: #E6EBF5;
+  --soft: #9AA6C1;
+  --line: rgba(230, 235, 245, .14);
+  --grid: rgba(230, 235, 245, .05);
+  --signal: #5B8BFF;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after { box-sizing: inherit }
+
+/*
+ * Hide the native scrollbar. Lenis drives the scrolling and the bar across the
+ * top already shows how far down the page you are.
+ *
+ * Scrolling itself is untouched: wheel, trackpad, touch, keyboard, and
+ * find-on-page all still work. Only the draggable handle is gone.
+ */
+html {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* legacy Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {     /* Chrome, Safari, Edge */
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+html.lenis,
+html.lenis body { height: auto }
+
+.lenis.lenis-smooth { scroll-behavior: auto !important }
+
+html.booting,
+html.booting body { overflow: hidden }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  text-align: justify;
+  text-justify: inter-word;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/*
+ * Justification only works with enough characters per line to absorb the
+ * stretched word spaces — below roughly 45 it opens rivers of white space.
+ * Measured here: 53-78 chars on desktop, but 34-38 on a phone, so prose goes
+ * back to ragged-right on narrow screens.
+ */
+@media (max-width: 860px) {
+  body { text-align: left }
+}
+
+/* Covers the status-bar inset so content doesn't show through on notched phones. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 60;
+  background: var(--paper);
+}
+
+a { color: inherit }
+
+:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 3px;
+}
+
+main { overflow-x: clip }
+
+@keyframes ping {
+  from { opacity: .8; transform: scale(.6) }
+  to { opacity: 0; transform: scale(1.7) }
+}
+
+@keyframes blink {
+  50% { opacity: 0 }
+}

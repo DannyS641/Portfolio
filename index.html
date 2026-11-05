@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oluwanifemi Oso · Software engineer and application manager</title>
+<meta name="description" content="Oluwanifemi Oso — software engineer and application manager. I build software and keep it running.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script>
+  // Decided before paint so the boot screen never flashes a scrollable page behind it.
+  (function () {
+    var seen = false
+    try { seen = sessionStorage.getItem('nifemi-boot') === '1' } catch (e) {}
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    window.__shouldBoot = !seen && !reduced
+    if (window.__shouldBoot) document.documentElement.classList.add('booting')
+  })()
+</script>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
