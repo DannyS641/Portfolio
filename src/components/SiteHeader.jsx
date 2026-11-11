@@ -26,6 +26,15 @@ export default function SiteHeader({ onCvClick }) {
 
   const close = () => setOpen(false)
 
+  // With a CV to link to the button is just a link. Without one it stays on
+  // the page and asks the contact form to explain itself.
+  const cvProps = contact.cvHref
+    ? { href: contact.cvHref, target: '_blank', rel: 'noopener noreferrer', onClick: close }
+    : {
+        href: '#contact',
+        onClick: (event) => { event.preventDefault(); close(); onCvClick() },
+      }
+
   return (
     <header className="site">
       <div className="wrap">
@@ -55,17 +64,7 @@ export default function SiteHeader({ onCvClick }) {
               {link.label}
             </SmoothLink>
           ))}
-          <a
-            className="btn"
-            href="#contact"
-            onClick={(event) => {
-              event.preventDefault()
-              close()
-              onCvClick()
-            }}
-          >
-            {contact.cvLabel}
-          </a>
+          <a className="btn" {...cvProps}>{contact.cvLabel}</a>
         </nav>
       </div>
     </header>

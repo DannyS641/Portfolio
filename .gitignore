@@ -13,5 +13,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# local secrets
-.env.local
+# local secrets — .env.example is the only one that gets committed
+.env
+.env.*
+!.env.example

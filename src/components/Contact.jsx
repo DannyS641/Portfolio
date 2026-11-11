@@ -1,9 +1,14 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { gsap } from '../lib/gsap'
 import { contact } from '../content'
-import { sendTicket } from '../lib/sendTicket'
+import { sendTicket, sendMode } from '../lib/sendTicket'
 
 const EMAIL = /^\S+@\S+\.\S+$/
+
+// A new tab for anything that leaves the page — an outside host, or a PDF
+// shipped with the site. Not mailto, which would strand an empty tab behind
+// the mail client, and not an in-page anchor.
+const opensAway = (href) => href.startsWith('http') || href.includes('.pdf')
 const TONE_CLASS = { low: 'p-low', mid: 'p-mid', high: 'p-high' }
 
 /**
@@ -32,8 +37,19 @@ const blankForm = () => ({
   botcheck: '',
 })
 
-/** The contact form, dressed up as a support ticket. Posts through Web3Forms. */
+/**
+ * The contact form, dressed up as a support ticket.
+ *
+ * With a form relay configured the message is gone by the time the ticket
+ * screen appears. Without one it is handed to the visitor's own mail app, and
+ * the screen says so rather than claiming an arrival that hasn't happened —
+ * every label on it comes from whichever of the two is in play.
+ */
 export default function Contact({ animate, cvSignal, onCvClick }) {
+  const mailMode = sendMode === 'mail'
+  const copy = mailMode ? contact.mail : contact
+  const steps = mailMode ? [contact.mail.firstStep, ...contact.steps.slice(1)] : contact.steps
+
   const sectionRef = useRef(null)
   const doneRef = useRef(null)
   const stepRefs = useRef([])
@@ -110,11 +126,12 @@ export default function Contact({ animate, cvSignal, onCvClick }) {
     const reference = newTicketId()
 
     setSending(true)
+    let mode
     try {
-      await sendTicket({ reference, name, email, topic: form.topic, priority: form.priority, details })
+      mode = await sendTicket({ reference, name, email, topic: form.topic, priority: form.priority, details })
     } catch (cause) {
-      // The ticket screen promises a reply, so it only appears once the message
-      // has actually left. A failure says so and gives the address instead.
+      // The ticket screen speaks for the message, so it only appears once the
+      // message has actually gone. A failure says so and gives the address.
       console.error('Ticket send failed:', cause)
       return setError(contact.errors.send)
     } finally {
@@ -124,11 +141,12 @@ export default function Contact({ animate, cvSignal, onCvClick }) {
     setStepsDone(0)
     setTicket({
       id: reference,
-      note: contact.sentNote
+      note: (mode === 'mail' ? contact.mail.note : contact.sentNote)
         .replace('{first}', name.split(' ')[0])
         .replace('{topic}', form.topic.toLowerCase())
         .replace('{priority}', form.priority.toLowerCase())
-        .replace('{email}', email),
+        .replace('{email}', email)
+        .replace('{reference}', reference),
     })
   }
 
@@ -152,7 +170,7 @@ export default function Contact({ animate, cvSignal, onCvClick }) {
                 key={link.label}
                 href={link.href}
                 onClick={link.cv ? (event) => { event.preventDefault(); onCvClick() } : undefined}
-                {...(link.href.startsWith('http')
+                {...(opensAway(link.href)
                   ? { target: '_blank', rel: 'noopener noreferrer' }
                   : {})}
               >
@@ -236,16 +254,16 @@ export default function Contact({ animate, cvSignal, onCvClick }) {
 
                 <p className="terr" role="alert">{error}</p>
                 <button className="btn" type="submit" disabled={sending}>
-                  {sending ? contact.sendingLabel : contact.submitLabel}
+                  {sending ? copy.sendingLabel : copy.submitLabel}
                 </button>
               </form>
             ) : (
               <div className="tdone" role="status" tabIndex={-1} ref={doneRef}>
                 <span className="tid">Ticket {ticket.id}</span>
-                <h3>Ticket opened</h3>
+                <h3>{copy.openedHeading}</h3>
 
                 <ol className="steps">
-                  {contact.steps.map((step, i) => (
+                  {steps.map((step, i) => (
                     <li key={step.title} className={i < stepsDone ? 'ok' : undefined}>
                       <i aria-hidden="true" ref={(el) => { stepRefs.current[i] = el }}>
                         {i < stepsDone ? '✓' : ''}

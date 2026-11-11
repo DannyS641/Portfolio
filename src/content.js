@@ -498,24 +498,52 @@ export const experience = [
 
 /* ---------- Contact ---------- */
 
+// The inbox the form delivers to, in one place so the link, the mail fallback
+// and the "that didn't send" message can't drift out of step.
+const INBOX = 'danieloluwanifemi2002@gmail.com'
+
+// Where the CV lives. Best is a PDF that ships with the site: drop it in
+// public/cv/ and set this to './cv/<name>.pdf'. A file served from your own
+// deploy can't expire, has no sign-in in front of it, and opens straight in
+// the browser's PDF viewer.
+//
+// A Drive or WPS share link works too, but check it in a private window
+// first: if sharing isn't set to "anyone with the link", recruiters get a
+// Request access wall instead of your CV, and you never hear about it.
+//
+// Empty means no CV yet, and both CV links say so rather than going nowhere.
+const CV_HREF = 'https://drive.google.com/file/d/1YI-SfR7Ltfa9SZDpb5smgifrim7Y8dqg/view?usp=drive_link'
+
 export const contact = {
+  inbox: INBOX,
   heading: 'Open a ticket',
   lede: 'Hiring, a project, or a system that needs looking after? Tell me what you need and I’ll reply within one working day.',
   // A link with `cv: true` is intercepted and shows `cvMessage` instead of navigating.
   links: [
-    { label: 'Email', detail: 'danieloluwanifemi2002@gmail.com', href: 'mailto:danieloluwanifemi2002@gmail.com' },
+    { label: 'Email', detail: INBOX, href: `mailto:${INBOX}` },
     { label: 'LinkedIn', detail: 'Oluwanifemi Oso', href: 'https://www.linkedin.com/' },
     { label: 'GitHub', detail: '@DannyS641', href: 'https://github.com/' },
-    { label: 'CV', detail: 'PDF, 2 pages', href: '#contact', cv: true },
+    { label: 'CV', detail: 'PDF, 2 pages', href: CV_HREF || './public/cv/Daniel_Oluwanifemi_Resume 1.pdf', cv: !CV_HREF },
   ],
   cvLabel: 'Download CV',
-  // No PDF in the repo yet. Drop one in /public and point the CV link at it,
-  // then this message stops being needed.
+  cvHref: CV_HREF,
+  // Shown by both CV links while CV_HREF is empty. Set it and this goes unused.
   cvMessage: 'The CV isn’t uploaded yet — email me and I’ll send it straight over.',
   submitLabel: 'Open ticket',
   sendingLabel: 'Opening ticket…',
+  openedHeading: 'Ticket opened',
   // {first} {topic} {priority} {email} are filled in once the message has sent.
   sentNote: 'Thanks, {first}. Topic: {topic}. Priority: {priority}. I’ll reply to {email}.',
+  // Used instead of the three keys above when no form relay is configured and
+  // the ticket is handed to the visitor's own mail app. Nothing has arrived
+  // until they press send, so none of this says that it has.
+  mail: {
+    submitLabel: 'Open ticket in email',
+    sendingLabel: 'Opening your mail app…',
+    openedHeading: 'Ticket drafted',
+    firstStep: { title: 'Drafted', note: 'Waiting in your mail app' },
+    note: `Your mail app should have opened with all of this written out — press send and it’s with me. If nothing opened, email ${INBOX} and quote {reference}.`,
+  },
   topics: ['A job', 'A project', 'Support for a system', 'Just saying hello'],
   priorities: [
     { label: 'No rush', tone: 'low' },
@@ -526,8 +554,9 @@ export const contact = {
     name: 'Add your name so I know who to reply to.',
     email: 'Add an email address I can reply to.',
     details: 'Add a few details about what you need.',
-    send: 'That didn’t send — email danieloluwanifemi2002@gmail.com directly and I’ll pick it up there.',
+    send: `That didn’t send — email ${INBOX} directly and I’ll pick it up there.`,
   },
+  // The first of these is swapped for `mail.firstStep` in mail mode.
   steps: [
     { title: 'Received', note: 'Your message is in my inbox' },
     { title: 'Read', note: 'Usually within a few hours' },
