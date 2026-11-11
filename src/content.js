@@ -512,7 +512,7 @@ const INBOX = 'danieloluwanifemi2002@gmail.com'
 // Request access wall instead of your CV, and you never hear about it.
 //
 // Empty means no CV yet, and both CV links say so rather than going nowhere.
-const CV_HREF = 'https://drive.google.com/file/d/1YI-SfR7Ltfa9SZDpb5smgifrim7Y8dqg/view?usp=drive_link'
+const CV_HREF = './cv/Oluwanifemi-Oso-CV.pdf'
 
 export const contact = {
   inbox: INBOX,

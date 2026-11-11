@@ -136,16 +136,26 @@ export default function Work({ animate }) {
       }
 
       // The deck drops onto the table the first time it scrolls into view.
-      gsap.from(cards, {
-        y: 220,
-        rotate: (i) => (i % 2 ? 1 : -1) * 14,
+      //
+      // This animates the stack as a whole, and deliberately not the cards.
+      // y, rotate and opacity all belong to the scrubbed timeline above, and
+      // two tweens writing the same property on the same element fight: the
+      // card you were looking at would fade to nothing a second after you
+      // stopped scrolling. It also finishes well before the pin engages, so a
+      // fast scroll doesn't land you on a half-faded deck.
+      gsap.from('.work-grid', {
+        y: 140,
         opacity: 0,
-        stagger: .08,
-        duration: 1,
+        duration: .6,
         ease: 'power3.out',
-        scrollTrigger: { trigger: '.work-grid', start: 'top 85%' },
-        onComplete: () => setTop(0),
+        scrollTrigger: { trigger: '.work-pin', start: 'top bottom' },
       })
+
+      // Counter, inert flags and the first diagram, set up front. This used to
+      // hang off the intro tween's onComplete, which meant that whenever those
+      // 1.7 seconds happened to run out the deck threw you back to card one —
+      // even if you were standing still halfway down it.
+      setTop(0)
     }, sectionRef)
 
     return () => {
